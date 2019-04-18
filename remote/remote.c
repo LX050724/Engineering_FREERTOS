@@ -253,13 +253,24 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	/******************************************E降下*******************************************************/
 
 	static uint8_t Eflag = 0;
+	static uint8_t rescueflag = 0;
 	if (key->v & Key_E)
 	{
 		if (Eflag == 0)
 		{
 			if (GetMod == 0)//正常模式，救援
 			{
-				Rescue;
+				//Rescue;
+				if(rescueflag == 0)
+				{
+					HAL_GPIO_WritePin(rescue_GPIO_Port,rescue_Pin,GPIO_PIN_RESET);
+					rescueflag = 1;
+				}
+				else
+				{
+					HAL_GPIO_WritePin(rescue_GPIO_Port,rescue_Pin,GPIO_PIN_SET);
+					rescueflag = 0;
+				}
 			}
 			Location_mode_Sent(Long0);
 			HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);

@@ -98,6 +98,8 @@ void Error_Handler(void);
 #define Q4_GPIO_Port GPIOF
 #define Q_Pin GPIO_PIN_5
 #define Q_GPIO_Port GPIOF
+#define rescue_Pin GPIO_PIN_7
+#define rescue_GPIO_Port GPIOF
 #define RF4_Pin GPIO_PIN_9
 #define RF4_GPIO_Port GPIOG
 #define RF3_Pin GPIO_PIN_10
