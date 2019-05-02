@@ -145,37 +145,37 @@ void Auto_task(void *pvParameters)
 				HAL_GPIO_WritePin(Q1_GPIO_Port,Q1_Pin,GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(Q2_GPIO_Port,Q2_Pin,GPIO_PIN_RESET);//全升
 			
-				osDelay(1000);
-			
+				osDelay(700);
+			  
 				HAL_GPIO_WritePin(Q_GPIO_Port,Q_Pin,GPIO_PIN_RESET);//气缸弹出
-			
+			 // Get_PID_Expect(700);  //全升之后，车向前靠近
 				osDelay(700);
 				
 				HAL_GPIO_WritePin(Q1_GPIO_Port,Q1_Pin,GPIO_PIN_SET);		//前腿收
 				osDelay(700);
 				
-				Get_PID_Expect(2500);
+			//	Get_PID_Expect(2500);   //前轮上台阶 后轮靠近台阶
+			Get_PID_Expect_qian(2800);
+			Get_PID_Expect_hou(2500);
+				while(RF4==1) vTaskDelay(1);	//等待传感器 检测辅助轮上台阶
 				
-				while(RF4==1)vTaskDelay(1);	//等待传感器
+				Get_PID_Expect(500);  //后轮撞上后 反弹 车往前开 轻触台阶
+				osDelay(500);
 				
-				Get_PID_Expect(0);
-				osDelay(200);
+				HAL_GPIO_WritePin(Q2_GPIO_Port,Q2_Pin,GPIO_PIN_SET); //后腿收
+				osDelay(700);          //等待后腿收
 				
-				HAL_GPIO_WritePin(Q2_GPIO_Port,Q2_Pin,GPIO_PIN_SET);//后腿收
-				osDelay(700);//等待后退收
+				Get_PID_Expect(4000);  //前后轮全速前进 爬台阶
 				
-				Get_PID_Expect(4000);
+				osDelay(700);          //以4000速度行进700毫秒
 				
-				osDelay(700);
+				Get_PID_Expect(0);  //停
 				
-				Get_PID_Expect(0);
+				Auto_flag=0;  //标志位清零
+				HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_SET); //指示灯闪烁 表示程序正常运行
 				
-				Auto_flag=0;
-				HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_SET);
-
-				osDelay(1000);
-				
-				HAL_GPIO_WritePin(Q_GPIO_Port,Q_Pin,GPIO_PIN_SET);//气缸收
+			//osDelay(1000);
+			  HAL_GPIO_WritePin(Q_GPIO_Port,Q_Pin,GPIO_PIN_SET);//气缸收
 			break;
 			
 			case 2:
@@ -194,8 +194,8 @@ void Auto_task(void *pvParameters)
 				
 				Get_PID_Expect(-1800);
 				
-				while((RF0==0)||(RF1==0))osDelay(1);	//等待传感器
-				
+			//	while((RF0==0)||(RF1==0))osDelay(1);	//等待传感器
+				while((RF0==0))osDelay(1);	//等待传感器
 				Get_PID_Expect(0);
 				
 				HAL_GPIO_WritePin(Q1_GPIO_Port,Q1_Pin,GPIO_PIN_RESET);//前伸

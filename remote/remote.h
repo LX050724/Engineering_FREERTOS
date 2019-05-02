@@ -1,5 +1,6 @@
 #ifndef __remote_H
 #define __remote_H
+
 #include "stm32f4xx.h"                  // Device header
 #include "Chassis.h"
 #include "motor.h"
@@ -19,14 +20,14 @@ else if(val>=max)\
 }\
 
 
-#define Key_W 0x01
-#define Key_A 0x04
-#define Key_S 0x02
-#define Key_D 0x08
-#define Key_Q 0x40
-#define Key_E 0x80
-#define Key_Ctrl 0x20
-#define Key_Shift 0x10
+#define Key_W 0x01   //向前
+#define Key_A 0x04   //向左
+#define Key_S 0x02   //向后
+#define Key_D 0x08   //向右
+#define Key_Q 0x40   //底盘旋转  （切视角）
+#define Key_E 0x80   //下降      （救援）
+#define Key_Ctrl 0x20  //
+#define Key_Shift 0x10 //上升     （取弹位置切换）
 
 typedef __packed struct
 {
@@ -45,8 +46,8 @@ typedef __packed struct
 	int16_t z;
 	uint8_t last_press_l;
 	uint8_t last_press_r;
-	uint8_t press_l;
-	uint8_t press_r;
+	uint8_t press_l;  //取弹
+	uint8_t press_r; //右键打开弹舱
 }Mouse;
 
 //e q ctrl shift d a s w

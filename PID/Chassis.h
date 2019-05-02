@@ -30,6 +30,8 @@ typedef __packed struct
 void PID_Expect(void);
 void Chassis_Speed_Ref_Init(void);
 void Get_PID_Expect(short speed);
+void Get_PID_Expect_qian(short speed);
+void Get_PID_Expect_hou(short speed);
 
 extern Chassis_Motor_PID_Expect    RM3510_PID_Expect;
 extern Chassis_Motor_Actual_Speed  RM3510_Actual_Speedt;

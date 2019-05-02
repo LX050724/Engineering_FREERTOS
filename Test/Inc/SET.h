@@ -27,10 +27,10 @@
 #define Cartridge if(TIM1->CCR1==2500)TIM1->CCR1=900;\
 									else TIM1->CCR1=2500;
 
-#define Cradle_P_forward TIM1->CCR3=800
-#define Cradle_P_back TIM1->CCR3=1500
-#define Cradle_Y_forward TIM1->CCR4=2500
-#define Cradle_Y_back TIM1->CCR4=500
+#define Cradle_P_forward TIM1->CCR3=1400
+#define Cradle_P_back TIM1->CCR3=800
+#define Cradle_Y_forward TIM1->CCR4=600
+#define Cradle_Y_back TIM1->CCR4=2500
 #define perspective_forward TIM1->CCR2=650
 #define perspective_back TIM1->CCR2=2440
 
@@ -40,8 +40,8 @@
 #define Cradle_back Cradle_P_back;\
 										Cradle_Y_back;
 										
-#define Rescue TIM9->CCR1=(TIM9->CCR1==2400 ? 500:2400);\
-							 TIM9->CCR2=(TIM9->CCR2==500  ? 2400:500);
+//#define Rescue TIM9->CCR1=(TIM9->CCR1==2400 ? 500:2400);\
+//							 TIM9->CCR2=(TIM9->CCR2==500  ? 2400:500);
 
 
 #define KP 2
@@ -49,7 +49,6 @@
 #define KD 3
 
 #define Long2 200
-
 #define Long1 850
 #define Long0 0
 

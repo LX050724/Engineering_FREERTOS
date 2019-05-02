@@ -6,10 +6,24 @@ ChassisSpeed_Ref_t          Chassis_Speed_Ref;
 
 void Get_PID_Expect(short speed)
 {
-	RM3510_PID_Expect.Chassis_Motor_PID_Expect_1 = -speed;
-	RM3510_PID_Expect.Chassis_Motor_PID_Expect_2 =  speed;
-	RM3510_PID_Expect.Chassis_Motor_PID_Expect_3 = -speed;
-	RM3510_PID_Expect.Chassis_Motor_PID_Expect_4 =  speed;
+	RM3510_PID_Expect.Chassis_Motor_PID_Expect_1 = -speed;  //前轮
+	RM3510_PID_Expect.Chassis_Motor_PID_Expect_2 =  speed;  //前轮
+	RM3510_PID_Expect.Chassis_Motor_PID_Expect_3 = -speed;  //后轮
+	RM3510_PID_Expect.Chassis_Motor_PID_Expect_4 =  speed;  //后轮
+}
+
+void Get_PID_Expect_qian(short speed)
+{
+	RM3510_PID_Expect.Chassis_Motor_PID_Expect_1 = -speed;  //前轮
+	RM3510_PID_Expect.Chassis_Motor_PID_Expect_2 =  speed;  //前轮
+	
+}
+
+void Get_PID_Expect_hou(short speed)
+{
+	
+	RM3510_PID_Expect.Chassis_Motor_PID_Expect_3 = -speed;  //后轮
+	RM3510_PID_Expect.Chassis_Motor_PID_Expect_4 =  speed;  //后轮
 }
 
 void Chassis_Speed_Ref_Init(void)

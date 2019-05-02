@@ -14,19 +14,20 @@ int16_t FB_SD,RL_SD;
 unsigned char keyQ_flag=0,keyE_flag=0,keymr_flag=0,Shiftflag=0,ML_Auto_flag=0;
 
 //输入模式设置
+
 void SetInputMode(Remote *rc)
 {
 	if(rc->s2 == 1)
 	{
-		inputmode = REMOTE_INPUT;
+		inputmode = REMOTE_INPUT;     //遥控器输入
 	}
 	else if(rc->s2 == 3)
 	{
-		inputmode = KEY_MOUSE_INPUT;
+		inputmode = KEY_MOUSE_INPUT;  //鼠标键盘输入
 	}
 	else if(rc->s2 == 2)
 	{
-		HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_RESET); //停止
 		Auto_flag=0;
 		inputmode = STOP;
 	}
@@ -37,7 +38,8 @@ InputMode_e GetInputMode()
 	return inputmode;
 }
 
-void MouseKeyControlProcess(Mouse *mouse, Key *key)
+  /********鼠标按键控制工程车*********/
+void MouseKeyControlProcess(Mouse *mouse, Key *key)  
 {
 	static uint16_t forward_back_speed = 0;
 	static uint16_t left_right_speed = 0;
@@ -164,7 +166,8 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			{
 				HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 				Auto_flag = 2;
-			}
+		
+  			}
 			else if(Shiftflag==1)
 			{
 				HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
