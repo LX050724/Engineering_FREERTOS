@@ -2,7 +2,10 @@
 
 short can_stop[4]= {0,0,0,0};
 unsigned char Auto_flag;
+
 uint8_t GetMod=0;//取弹展开标志位 0:缩  1:展开一排位置  2:展开二排位置
+uint8_t View_mode1 = 0,View_mode2 = 1;
+
 static InputMode_e inputmode = REMOTE_INPUT;   //输入模式设定
 RC_Ctl_t RC_CtrlData;   //remote control data
 
@@ -47,7 +50,6 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	forward_back_speed =  5300;
 	left_right_speed = 5300;
 	
-	
 	if(key->v & Key_W)  // key: w   前进
 	{
 		ramp = CHASSIS_RAMP_FB;
@@ -83,6 +85,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		ResetSlope(ramp);
 		Chassis_Speed_Ref.forward_back_ref = 0;
 	}
+	
 	if(key->v & Key_D)  // key: d 右移
 	{
 		ramp = CHASSIS_RAMP_RL;
@@ -95,10 +98,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		}
 
 		Chassis_Speed_Ref.left_right_ref = left_right_speed * Slope(70000,ramp);
-//			RL_SD = Chassis_Speed_Ref.left_right_ref ;
-
 		rr_flag = 0;
-//			printf("d\r\n");
 	}
 	else if(key->v & Key_A) //key: a 左移
 	{
@@ -113,7 +113,6 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		Chassis_Speed_Ref.left_right_ref = -left_right_speed * Slope(70000,ramp);
 		RL_SD = Chassis_Speed_Ref.left_right_ref ;
 		RL_flag=0;
-//			printf("a\r\n");
 	}
 	else
 	{
@@ -121,16 +120,16 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		down_ramp = CHASSIS_RAMP_RL;
 		ResetSlope(ramp);
 		Chassis_Speed_Ref.left_right_ref=0;
-//			if(down_RL_flag == 0)
-//			{
-//			  Reset_down_slope(down_ramp);
-//				down_RL_flag = 1;
-//			}
-//		  Chassis_Speed_Ref.left_right_ref = RL_SD * down_slope(5000,down_ramp);
-//			Chassis_Speed_Ref.left_right_ref = 0;
-
 	}
-
+	
+	VAL_LIMIT(mouse->x, -120, 120); 
+	VAL_LIMIT(mouse->y, -120, 120); 
+	Chassis_Speed_Ref.rotate_ref=mouse->x*-80;
+	if(View_mode2 == 0)
+	{
+		Chassis_Speed_Ref.left_right_ref = -Chassis_Speed_Ref.left_right_ref;
+		Chassis_Speed_Ref.rotate_ref = -Chassis_Speed_Ref.rotate_ref;
+	}
 	
 	
 	/*************************************************************************************************/
@@ -156,7 +155,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		Shiftflag = 1;
 	}
 	else Shiftflag = 0;
-	/********************************************SC，C上下岛*****************************************************/
+	/********************************************Shift+Ctrl，Ctrl上下岛*****************************************************/
 	static uint8_t Ctrlflag=0;
 	if(key->v & Key_Ctrl)
 	{
@@ -194,7 +193,6 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 
 	/********************************************Q切视角，SQ上岛*****************************************************/
 	static uint8_t Qflag = 0;
-	static uint8_t View_mode1 = 0,View_mode2 = 0;
 	if (key->v & Key_Q)
 	{
 		if (Qflag==0)
@@ -241,7 +239,6 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 					}
 					else
 					{
-
 						//云台看前方
 						Cradle_forward;
 						View_mode2 = 0;
@@ -275,18 +272,21 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 					rescueflag = 0;
 				}
 			}
-			Location_mode_Sent(Long0);
-			HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(Q1_GPIO_Port, Q1_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(Q2_GPIO_Port, Q2_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_SET);
-			//云台转向后方，图传转向前方
-			Cradle_back;
-			perspective_forward;
-			View_mode2 = 1;
-			View_mode1 = 0;
-			Eflag = 1;
-			GetMod = 0;//清除标志
+			else
+			{
+				Location_mode_Sent(Long0);
+				HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(Q1_GPIO_Port, Q1_Pin, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(Q2_GPIO_Port, Q2_Pin, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_SET);
+				//云台转向后方，图传转向前方
+				Cradle_back;
+				perspective_forward;
+				View_mode2 = 1;
+				View_mode1 = 0;
+				Eflag = 1;
+				GetMod = 0;//清除标志
+			}
 		}
 	}
 	else Eflag = 0;
@@ -487,10 +487,6 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 //		HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_RESET);
 //		Auto_flag=2;
 //	}
-
-		VAL_LIMIT(mouse->x, -120, 120); 
-		VAL_LIMIT(mouse->y, -120, 120); 
-		Chassis_Speed_Ref.rotate_ref=mouse->x*-80;
 }
 
 void RemoteShootControl(int8_t s1)
