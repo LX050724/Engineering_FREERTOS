@@ -88,6 +88,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define dancang_Pin GPIO_PIN_0
+#define dancang_GPIO_Port GPIOF
 #define Q2_Pin GPIO_PIN_1
 #define Q2_GPIO_Port GPIOF
 #define Q1_Pin GPIO_PIN_2

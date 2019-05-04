@@ -1,5 +1,8 @@
-#ifndef _FREERTOSTASK_H_
-#define _FREERTOSTASK_H_
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "cmsis_os.h"
 #include "stm32f4xx_hal.h"
 
@@ -26,4 +29,6 @@ void Remote_task(void *pvParameters);
 extern TaskHandle_t Auto_task_Handler;
 void Auto_task(void *pvParameters);
 
+#ifdef __cplusplus
+}
 #endif

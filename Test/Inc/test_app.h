@@ -5,8 +5,10 @@
   *@brief 
   */
   
-#ifndef _TEST__APP_H
-#define _TEST__APP_H
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "stm32f4xx_HAL.h"
 
@@ -35,5 +37,7 @@
 
 //void Test_task(void);
 
+#ifdef __cplusplus
+}
 #endif
 

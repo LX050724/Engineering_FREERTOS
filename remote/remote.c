@@ -125,10 +125,16 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	VAL_LIMIT(mouse->x, -120, 120); 
 	VAL_LIMIT(mouse->y, -120, 120); 
 	Chassis_Speed_Ref.rotate_ref=mouse->x*-80;
-	if(View_mode2 == 0)
+	
+	if((View_mode1 == 1)&&(View_mode2 == 0))//图传看后，云台看前
 	{
 		Chassis_Speed_Ref.left_right_ref = -Chassis_Speed_Ref.left_right_ref;
-		Chassis_Speed_Ref.rotate_ref = -Chassis_Speed_Ref.rotate_ref;
+		Chassis_Speed_Ref.rotate_ref     = -Chassis_Speed_Ref.rotate_ref;
+	}
+	
+	if((View_mode1 == 1)&&(View_mode2 == 1))//图传看后，云台看后
+	{
+		Chassis_Speed_Ref.forward_back_ref = -Chassis_Speed_Ref.forward_back_ref;
 	}
 	
 	
@@ -165,8 +171,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			{
 				HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 				Auto_flag = 2;
-		
-  			}
+  		}
 			else if(Shiftflag==1)
 			{
 				HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
@@ -180,13 +185,23 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	
 	/***************************************右键弹舱**********************************************************/
 
-	static uint8_t mrflag;
+	static uint8_t mrflag  = 0;
+	static uint8_t DC_flag = 0;
 	if (mouse->press_r)
 	{
-		if (mrflag ==0)
+		if(mrflag == 0)
 		{
-			Cartridge;
-			mrflag = 1;
+			mrflag =1;
+			if (DC_flag ==0)
+			{
+				HAL_GPIO_WritePin(dancang_GPIO_Port,dancang_Pin,GPIO_PIN_RESET);
+				DC_flag = 1;
+			}
+			else
+			{
+				HAL_GPIO_WritePin(dancang_GPIO_Port,dancang_Pin,GPIO_PIN_SET);
+				DC_flag = 0;
+			}
 		}
 	}
 	else mrflag = 0;
@@ -218,13 +233,13 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 					if (View_mode1 == 0)
 					{
 						//图传看前方
-						perspective_forward;
+						perspective_back;
 						View_mode1 = 1;
 					}
 					else
 					{
 						//图传看后方
-						perspective_back;
+						perspective_forward;
 						View_mode1 = 0;
 					}
 				}
@@ -280,9 +295,9 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 				HAL_GPIO_WritePin(Q2_GPIO_Port, Q2_Pin, GPIO_PIN_SET);
 				HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_SET);
 				//云台转向后方，图传转向前方
-				Cradle_back;
-				perspective_forward;
-				View_mode2 = 1;
+				Cradle_back;           //摇篮向后
+				perspective_forward;   //透视向前
+		   	View_mode2 = 1;
 				View_mode1 = 0;
 				Eflag = 1;
 				GetMod = 0;//清除标志
@@ -494,7 +509,7 @@ void RemoteShootControl(int8_t s1)
 	switch(s1)
 	{
 		case 1://上岛模式
-		{			
+		{
 			Auto_flag=1;
 			break;
 		}
@@ -563,6 +578,7 @@ void Remote_Rx(unsigned char *RxMsg,RC_Ctl_t *RCData)
 			MouseKeyControlProcess(&(RCData->mouse),&(RCData->key));
 		}
 		break;
+		
 		case STOP:
 		{
 			Chassis_Speed_Ref_Init();

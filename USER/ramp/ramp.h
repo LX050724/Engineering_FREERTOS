@@ -1,5 +1,7 @@
-#ifndef __ramp_H
-#define __ramp_H
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "stm32f4xx_hal.h"
 #include "sys.h"
@@ -51,8 +53,9 @@ extern ramp_t down_ramp;
 float Slope(u32 maximum_value, ramp_t ramp);
 void ResetSlope(ramp_t ramp);
 
-
-#endif /*__ usart_H */
+#ifdef __cplusplus
+}
+#endif
 
 
 

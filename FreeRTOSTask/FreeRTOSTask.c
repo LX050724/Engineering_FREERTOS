@@ -176,7 +176,7 @@ void Auto_task(void *pvParameters)
 				
 			//osDelay(1000);
 			  HAL_GPIO_WritePin(Q_GPIO_Port,Q_Pin,GPIO_PIN_SET);//Æø¸×ÊÕ
-			break;
+			  break;
 			
 			case 2:
 				HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_RESET);
@@ -210,7 +210,7 @@ void Auto_task(void *pvParameters)
 				
 				Auto_flag=0;
 				HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_SET);
-			break;
+			  break;
 			
 			default:
 				vTaskDelay(5);

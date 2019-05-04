@@ -1,5 +1,7 @@
-#ifndef __remote_H
-#define __remote_H
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "stm32f4xx.h"                  // Device header
 #include "Chassis.h"
@@ -85,4 +87,6 @@ void Remote_Rx(unsigned char *RxMsg,RC_Ctl_t *RCData);
 
 extern unsigned char Auto_flag;
 extern RC_Ctl_t RC_CtrlData;   //remote control data
+#ifdef __cplusplus
+}
 #endif

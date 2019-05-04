@@ -1,5 +1,7 @@
-#ifndef _SET_H_
-#define _SET_H_
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define ON 1
 #define OFF 0
@@ -23,16 +25,14 @@
 #define steering_gear_2_0 1350
 #define steering_gear_2_1 500
 
-//ЕЏВе
-#define Cartridge if(TIM1->CCR1==2500)TIM1->CCR1=900;\
-									else TIM1->CCR1=2500;
 
-#define Cradle_P_forward TIM1->CCR3=1400
-#define Cradle_P_back TIM1->CCR3=800
+
+#define Cradle_P_forward TIM1->CCR3=700
+#define Cradle_P_back TIM1->CCR3=1350
 #define Cradle_Y_forward TIM1->CCR4=600
 #define Cradle_Y_back TIM1->CCR4=2500
-#define perspective_forward TIM1->CCR2=650
-#define perspective_back TIM1->CCR2=2440
+#define perspective_forward TIM1->CCR2=720
+#define perspective_back TIM1->CCR2=2500
 
 #define Cradle_forward Cradle_P_forward;\
 											 Cradle_Y_forward;
@@ -45,8 +45,6 @@
 
 
 
-///16464
-
 #define KP 2
 #define KI 0
 #define KD 3
@@ -55,4 +53,6 @@
 #define Long1 850
 #define Long0 0
 
+#ifdef __cplusplus
+}
 #endif

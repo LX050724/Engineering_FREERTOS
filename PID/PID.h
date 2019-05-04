@@ -1,5 +1,7 @@
-#ifndef _PID_H_
-#define _PID_H_
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "sys.h"
 #include "set.h"
 
@@ -32,4 +34,6 @@ extern PID RM3510_2_PID;
 extern PID RM3510_3_PID;
 extern PID RM3510_4_PID;
 
+#ifdef __cplusplus
+}
 #endif

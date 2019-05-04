@@ -5,10 +5,14 @@
   *@brief 
   */
 
-#ifndef _TEST__USB_H
-#define _TEST__USB_H
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "stm32f4xx_HAL.h"
 
+#ifdef __cplusplus
+}
 #endif
 

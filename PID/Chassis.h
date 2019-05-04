@@ -1,5 +1,7 @@
-#ifndef _CHASSIS_H_
-#define _CHASSIS_H_
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "sys.h"
 #include "PID.h"
 #include "remote.h"
@@ -37,4 +39,6 @@ extern Chassis_Motor_PID_Expect    RM3510_PID_Expect;
 extern Chassis_Motor_Actual_Speed  RM3510_Actual_Speedt;
 extern ChassisSpeed_Ref_t          Chassis_Speed_Ref;
 
+#ifdef __cplusplus
+}
 #endif

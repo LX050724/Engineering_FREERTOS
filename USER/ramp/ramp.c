@@ -5,10 +5,11 @@
 
 Flag_t flag_t = {0, 0, 0, 0, 0, 0};
 Value_t value = {0, 0, 0, 0, 0, 0};
-Get_t get = {0, 0, 0, 0, 0, 0};
+Get_t get     = {0, 0, 0, 0, 0, 0};
 
 ramp_t ramp;
 ramp_t down_ramp;
+
 float Slope(u32 maximum_value, ramp_t ramp)//Ð±ÆÂº¯Êý£¬ÈÃ»ºÂýÔöËÙ
 {
 	switch(ramp)

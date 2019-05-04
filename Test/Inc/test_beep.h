@@ -5,8 +5,10 @@
   *@brief 
   */
   
-#ifndef _TEST__BEEP_H
-#define _TEST__BEEP_H
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "stm32f4xx_HAL.h"
 
@@ -50,5 +52,7 @@
 //void Sing(Sound_tone_e tone);
 //void Sing_Startup_music(uint32_t index);
 
+#ifdef __cplusplus
+}
 #endif
 

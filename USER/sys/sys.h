@@ -1,5 +1,7 @@
-#ifndef __SYS_H
-#define __SYS_H	
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "stm32f4xx.h"
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
@@ -96,4 +98,6 @@ typedef __I uint8_t vuc8;
 #define PGout(n)   BIT_ADDR(GPIOG_ODR_Addr,n)  //输出 
 #define PGin(n)    BIT_ADDR(GPIOG_IDR_Addr,n)  //输入
 
+#ifdef __cplusplus
+}
 #endif

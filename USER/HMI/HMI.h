@@ -1,5 +1,7 @@
-#ifndef _HMI_H_
-#define _HMI_H_
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "stm32f4xx.h"                  // Device header
 #include "usart.h"
@@ -54,4 +56,6 @@ int fputc(int ch, FILE *f)
 }
 */
 
+#ifdef __cplusplus
+}
 #endif

@@ -5,10 +5,14 @@
   *@brief 
   */
   
-#ifndef _TEST__LED_H
-#define _TEST__LED_H
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "stm32f4xx_hal.h"
 
+#ifdef __cplusplus
+}
 #endif
 
