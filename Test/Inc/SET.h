@@ -29,8 +29,8 @@ extern "C" {
 
 #define Cradle_P_forward TIM1->CCR3=700
 #define Cradle_P_back TIM1->CCR3=1350
-#define Cradle_Y_forward TIM1->CCR4=600
-#define Cradle_Y_back TIM1->CCR4=2500
+#define Cradle_Y_forward TIM1->CCR4=1150
+#define Cradle_Y_back TIM1->CCR4=2300
 #define perspective_forward TIM1->CCR2=720
 #define perspective_back TIM1->CCR2=2500
 
@@ -49,7 +49,7 @@ extern "C" {
 #define KI 0
 #define KD 3
 
-#define Long2 200
+#define Long2 250
 #define Long1 850
 #define Long0 0
 

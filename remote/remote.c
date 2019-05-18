@@ -125,6 +125,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	VAL_LIMIT(mouse->x, -120, 120); 
 	VAL_LIMIT(mouse->y, -120, 120); 
 	Chassis_Speed_Ref.rotate_ref=mouse->x*-80;
+	/****************************************方向修正及特殊速度限制**********************************/
 	
 	if((View_mode1 == 1)&&(View_mode2 == 0))//图传看后，云台看前
 	{
@@ -135,6 +136,14 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	if((View_mode1 == 1)&&(View_mode2 == 1))//图传看后，云台看后
 	{
 		Chassis_Speed_Ref.forward_back_ref = -Chassis_Speed_Ref.forward_back_ref;
+		Chassis_Speed_Ref.rotate_ref 
+		= -Chassis_Speed_Ref.rotate_ref;
+	}
+	
+	if(GetMod != 0)//如果处于取弹，限制速度
+	{
+		VAL_LIMIT(Chassis_Speed_Ref.forward_back_ref,-1500,1500);
+		VAL_LIMIT(Chassis_Speed_Ref.left_right_ref,-2500,2500);
 	}
 	
 	
@@ -273,6 +282,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	{
 		if (Eflag == 0)
 		{
+			Eflag = 1;
 			if (GetMod == 0)//正常模式，救援
 			{
 				//Rescue;
@@ -299,7 +309,6 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 				perspective_forward;   //透视向前
 		   	View_mode2 = 1;
 				View_mode1 = 0;
-				Eflag = 1;
 				GetMod = 0;//清除标志
 			}
 		}
@@ -334,10 +343,10 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			{
 				if ((TIM7->CNT) > 4000)HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_SET);//夹
 				if ((TIM7->CNT) > 6000)HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);//抬
-				if ((TIM7->CNT) > 16000)Location_mode_Sent(500);
-				if ((TIM7->CNT) > 23000)HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_RESET); //扔
-				if ((TIM7->CNT) > 24000)HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_RESET); //松夹子
-				if ((TIM7->CNT) > 27000)
+				if ((TIM7->CNT) > 16000)Location_mode_Sent(630);
+				if ((TIM7->CNT) > 25000)HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_RESET); //扔
+				if ((TIM7->CNT) > 26000)HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_RESET); //松夹子
+				if ((TIM7->CNT) > 29000)
 				{
 					HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);//抬
 					Location_mode_Sent(Long2);
