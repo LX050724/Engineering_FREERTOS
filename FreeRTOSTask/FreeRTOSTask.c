@@ -195,18 +195,16 @@ void Auto_task(void *pvParameters)
 				Get_PID_Expect(-1800);
 				
 			//	while((RF0==0)||(RF1==0))osDelay(1);	//等待传感器
-				while((RF0==0))osDelay(1);	//等待传感器
+				while(RF0==0)vTaskDelay(1);	//等待传感器
 				Get_PID_Expect(0);
 				
 				HAL_GPIO_WritePin(Q1_GPIO_Port,Q1_Pin,GPIO_PIN_RESET);//前伸
 				osDelay(700);
 				
 				HAL_GPIO_WritePin(Q_GPIO_Port,Q_Pin,GPIO_PIN_SET);//气缸收
-//				osDelay(1000);
-				
+				vTaskDelay(100);
 				HAL_GPIO_WritePin(Q1_GPIO_Port,Q1_Pin,GPIO_PIN_SET);	//全收
 				HAL_GPIO_WritePin(Q2_GPIO_Port,Q2_Pin,GPIO_PIN_SET);			
-//				osDelay(1000);
 				
 				Auto_flag=0;
 				HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_SET);

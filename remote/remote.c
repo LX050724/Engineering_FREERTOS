@@ -50,6 +50,13 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	forward_back_speed =  5300;
 	left_right_speed = 5300;
 	
+	//Shift加速
+	if(key->v & Key_Shift)
+	{
+		forward_back_speed =  7000;
+		left_right_speed = 7000;
+	}
+	
 	if(key->v & Key_W)  // key: w   前进
 	{
 		ramp = CHASSIS_RAMP_FB;
@@ -120,30 +127,6 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		down_ramp = CHASSIS_RAMP_RL;
 		ResetSlope(ramp);
 		Chassis_Speed_Ref.left_right_ref=0;
-	}
-	
-	VAL_LIMIT(mouse->x, -120, 120); 
-	VAL_LIMIT(mouse->y, -120, 120); 
-	Chassis_Speed_Ref.rotate_ref=mouse->x*-80;
-	/****************************************方向修正及特殊速度限制**********************************/
-	
-	if((View_mode1 == 1)&&(View_mode2 == 0))//图传看后，云台看前
-	{
-		Chassis_Speed_Ref.left_right_ref = -Chassis_Speed_Ref.left_right_ref;
-		Chassis_Speed_Ref.rotate_ref     = -Chassis_Speed_Ref.rotate_ref;
-	}
-	
-	if((View_mode1 == 1)&&(View_mode2 == 1))//图传看后，云台看后
-	{
-		Chassis_Speed_Ref.forward_back_ref = -Chassis_Speed_Ref.forward_back_ref;
-		Chassis_Speed_Ref.rotate_ref 
-		= -Chassis_Speed_Ref.rotate_ref;
-	}
-	
-	if(GetMod != 0)//如果处于取弹，限制速度
-	{
-		VAL_LIMIT(Chassis_Speed_Ref.forward_back_ref,-1500,1500);
-		VAL_LIMIT(Chassis_Speed_Ref.left_right_ref,-2500,2500);
 	}
 	
 	
@@ -356,161 +339,29 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		}
 	}
 	
-	/*************************************************************************************************/
-
 	
-//	if((key->v & Key_Q)||(keyQ_flag==1))  // q  0x40  取弹伸
+	VAL_LIMIT(mouse->x, -120, 120); 
+	VAL_LIMIT(mouse->y, -120, 120); 
+	Chassis_Speed_Ref.rotate_ref=mouse->x*-80;
+	/****************************************方向修正及特殊速度限制**********************************/
+	
+//	if((View_mode1 == 1)&&(View_mode2 == 0))//图传看后，云台看前
 //	{
-//		if(keyQ_flag==0)
-//		{
-//			keyQ_flag=1;//开启自动进入
-//			GetMod=1;//标记展开
-//			HAL_GPIO_WritePin(Q1_GPIO_Port,Q1_Pin,GPIO_PIN_RESET);
-//			HAL_GPIO_WritePin(Q2_GPIO_Port,Q2_Pin,GPIO_PIN_RESET);
-//			HAL_GPIO_WritePin(Q4_GPIO_Port,Q4_Pin,GPIO_PIN_RESET);
-//			TIM7->CNT=0;//时间清空
-//		}
-//		if(keyQ_flag==1)//自动进入
-//		{
-//			if(TIM7->CNT>10000)
-//			{
-//				Location_mode_Sent(Long2);
-////				HAL_GPIO_WritePin(Q3_GPIO_Port,Q3_Pin,GPIO_PIN_RESET);
-//				keyQ_flag=0;
-//			}
-//		}
+//		Chassis_Speed_Ref.left_right_ref = -Chassis_Speed_Ref.left_right_ref;
+//		Chassis_Speed_Ref.rotate_ref     = -Chassis_Speed_Ref.rotate_ref;
 //	}
-//	
-//	
-//	if(key->v & 0x80) //  e   0x80  取弹缩
-//	{
-//		if(keyE_flag==0)//防重入
-//		{
-//			keyE_flag=1;
-//			Location_mode_Sent(Long0);
-//			HAL_GPIO_WritePin(Q3_GPIO_Port,Q3_Pin,GPIO_PIN_SET);
-//			HAL_GPIO_WritePin(Q1_GPIO_Port,Q1_Pin,GPIO_PIN_SET);
-//			HAL_GPIO_WritePin(Q2_GPIO_Port,Q2_Pin,GPIO_PIN_SET);
-//			HAL_GPIO_WritePin(Q4_GPIO_Port,Q4_Pin,GPIO_PIN_SET);
-//			if(GetMod==0)//正常模式，救援
-//			{
-//				if(TIM1->CCR3==steering_gear_2_0)TIM1->CCR3=steering_gear_2_1;
-//				else TIM1->CCR3=steering_gear_2_0;
-//				
-//				if(TIM1->CCR2==steering_gear_1_0)TIM1->CCR2=steering_gear_1_1;
-//				else TIM1->CCR2=steering_gear_1_0;
-//			}
-//			GetMod=0;//清除标志
-//		}
-//	}else keyE_flag=0;
-//	
-//	/*************左键  夹取，扔*********/ 
-//	if((mouse->press_l)||(ML_Auto_flag==1))  
-//	{
-//		if(ML_Auto_flag==0)
-//		{
-//			ML_Auto_flag=1;
-////			HAL_GPIO_WritePin(Q4_GPIO_Port,Q4_Pin,GPIO_PIN_SET);//夹
-//			HAL_GPIO_WritePin(Q3_GPIO_Port,Q3_Pin,GPIO_PIN_RESET);//下去
-//			TIM7->CNT=0;
-//		}
-//		if(ML_Auto_flag==1)
-//		{
-//			if(GetMod==2)
-//			{
-//				if((TIM7->CNT)>4000)HAL_GPIO_WritePin(Q4_GPIO_Port,Q4_Pin,GPIO_PIN_SET);//夹
-//					//HAL_GPIO_WritePin(Q3_GPIO_Port,Q3_Pin,GPIO_PIN_SET);//抬
-//				if((TIM7->CNT)>6000)HAL_GPIO_WritePin(Q3_GPIO_Port,Q3_Pin,GPIO_PIN_SET);//抬
-//					//HAL_GPIO_WritePin(Q3_GPIO_Port,Q3_Pin,GPIO_PIN_RESET);  //扔				
-//				
-//				if((TIM7->CNT)>16000)HAL_GPIO_WritePin(Q3_GPIO_Port,Q3_Pin,GPIO_PIN_RESET); //扔
-//				
-//				if((TIM7->CNT)>16500)HAL_GPIO_WritePin(Q4_GPIO_Port,Q4_Pin,GPIO_PIN_RESET); //松夹子
-//				
-//				if((TIM7->CNT)>20000)
-//				{
-//					//HAL_GPIO_WritePin(Q4_GPIO_Port,Q4_Pin,GPIO_PIN_RESET);//松夹子
-//					HAL_GPIO_WritePin(Q3_GPIO_Port,Q3_Pin,GPIO_PIN_SET);//抬
-//					ML_Auto_flag=0;
-//				}
-//
-//			}
-//			else if(GetMod==1)
-//			{
-//				if((TIM7->CNT)>4000)HAL_GPIO_WritePin(Q4_GPIO_Port,Q4_Pin,GPIO_PIN_SET);//夹
-//					//HAL_GPIO_WritePin(Q3_GPIO_Port,Q3_Pin,GPIO_PIN_SET);//抬
-//				if((TIM7->CNT)>6000)HAL_GPIO_WritePin(Q3_GPIO_Port,Q3_Pin,GPIO_PIN_SET);//抬
-//					//HAL_GPIO_WritePin(Q3_GPIO_Port,Q3_Pin,GPIO_PIN_RESET);  //扔
-//				
-//				
-//				if((TIM7->CNT)>16000)Location_mode_Sent(500);
-//				
-//				
-//				
-//				if((TIM7->CNT)>23000)HAL_GPIO_WritePin(Q3_GPIO_Port,Q3_Pin,GPIO_PIN_RESET); //扔
-//				
-//				if((TIM7->CNT)>24500)HAL_GPIO_WritePin(Q4_GPIO_Port,Q4_Pin,GPIO_PIN_RESET); //松夹子
-//				
-//				if((TIM7->CNT)>27000)
-//				{
-//					//HAL_GPIO_WritePin(Q4_GPIO_Port,Q4_Pin,GPIO_PIN_RESET);//松夹子
-//					HAL_GPIO_WritePin(Q3_GPIO_Port,Q3_Pin,GPIO_PIN_SET);//抬
-//					Location_mode_Sent(Long2);
-//					ML_Auto_flag=0;
-//				}
-//			}
-//			
-////						if((TIM7->CNT)>10000)
-////						{
-////							HAL_GPIO_WritePin(Q4_GPIO_Port,Q4_Pin,GPIO_PIN_RESET); //松夹子
-////							ML_Auto_flag=0;
-////						}
-//
-//		}
-//	}
-//	
-//	/*************右键弹舱*********/
-//	if(mouse->press_r)  
-//	{
-//		if(keymr_flag==0)
-//		{
-//		keymr_flag=1;
-//		if(TIM1->CCR4==steering_gear_3_0)TIM1->CCR4=steering_gear_3_1;
-//		else TIM1->CCR4=steering_gear_3_0;
-//		}
-//	}else keymr_flag=0;
-//	
-//	if(key->v & Key_Shift)	//shift  0x10  上岛、切换取弹位置
-//	{
-//		if(Shiftflag==0)
-//		{
-//			Shiftflag=1;
-//			if(GetMod==0)
-//			{
-//				HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_RESET);
-//				Auto_flag=1;
-//			}
-//			else
-//			{
-//				if(GetMod==1)
-//				{
-//					Location_mode_Sent(Long1);
-//					GetMod=2;//标记二排位置
-//				}
-//				else if(GetMod==2)
-//				{
-//					Location_mode_Sent(Long2);
-//					GetMod=1;//标记一排位置
-//				}
-//			}
-//		}
-//	}else Shiftflag=0;
-//	
-//	if(key->v & Key_Ctrl)	//ctrl   0x20  下岛
-//	{
-//		HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_RESET);
-//		Auto_flag=2;
-//	}
+	
+	if((View_mode1 == 1)&&(View_mode2 == 1))//图传看后，云台看后
+	{
+		Chassis_Speed_Ref.forward_back_ref = -Chassis_Speed_Ref.forward_back_ref;
+		Chassis_Speed_Ref.rotate_ref = -Chassis_Speed_Ref.rotate_ref;
+	}
+	
+	if(GetMod != 0)//如果处于取弹，限制速度
+	{
+		VAL_LIMIT(Chassis_Speed_Ref.forward_back_ref,-1500,1500);
+		VAL_LIMIT(Chassis_Speed_Ref.left_right_ref,-2500,2500);
+	}
 }
 
 void RemoteShootControl(int8_t s1)

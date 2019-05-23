@@ -17,31 +17,19 @@ extern "C" {
 #define STICK_TO_CHASSIS_SPEED_REF_FACT     16.0f
 #define STICK_TO_ROTATE_SPEED_REF_FACT     	12.0f
 
-//×ó¾ÈÔ®
-#define steering_gear_1_0 2600
-#define steering_gear_1_1 1500
 
-//ÓÒ¾ÈÔ®
-#define steering_gear_2_0 1350
-#define steering_gear_2_1 500
+//#define Cradle_P_forward TIM1->CCR3=700
+//#define Cradle_P_back TIM1->CCR3=1350
+//#define Cradle_Y_forward TIM1->CCR4=1150
+//#define Cradle_Y_back TIM1->CCR4=2300
+#define perspective_forward TIM1->CCR2=750
+#define perspective_back TIM1->CCR2=1950
 
-
-
-#define Cradle_P_forward TIM1->CCR3=700
-#define Cradle_P_back TIM1->CCR3=1350
-#define Cradle_Y_forward TIM1->CCR4=1150
-#define Cradle_Y_back TIM1->CCR4=2300
-#define perspective_forward TIM1->CCR2=720
-#define perspective_back TIM1->CCR2=2500
-
-#define Cradle_forward Cradle_P_forward;\
-											 Cradle_Y_forward;
+#define Cradle_forward HAL_GPIO_WritePin(IMG_GPIO_Port,IMG_Pin,GPIO_PIN_SET);
 											 
-#define Cradle_back Cradle_P_back;\
-										Cradle_Y_back;
+#define Cradle_back HAL_GPIO_WritePin(IMG_GPIO_Port,IMG_Pin,GPIO_PIN_RESET);
 										
-//#define Rescue TIM9->CCR1=(TIM9->CCR1==2400 ? 500:2400);\
-//							 TIM9->CCR2=(TIM9->CCR2==500  ? 2400:500);
+
 
 
 
