@@ -154,25 +154,33 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	}
 	else Shiftflag = 0;
 	/********************************************Shift+Ctrl£¬CtrlÉÏÏÂµº*****************************************************/
-	static uint8_t Ctrlflag=0;
+	static uint16_t SCtime = 0,Ctime = 0;
 	if(key->v & Key_Ctrl)
 	{
-		if (Ctrlflag == 0)
+		if (Shiftflag == 0)
 		{
-			if (Shiftflag == 0)
+			Ctime++;
+			if(Ctime==140)
 			{
 				HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 				Auto_flag = 2;
-  		}
-			else if(Shiftflag==1)
+			}
+		}
+		else if(Shiftflag==1)
+		{
+			SCtime++;
+			if(SCtime==140)
 			{
 				HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 				Auto_flag = 1;
 			}
-			Ctrlflag = 1;
 		}
 	}
-	else Ctrlflag = 0;
+	else
+	{
+		Ctime = 0;
+		SCtime = 0;
+	}
 
 	
 	/***************************************ÓÒ¼üµ¯²Õ**********************************************************/
@@ -198,7 +206,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	}
 	else mrflag = 0;
 
-	/********************************************QÇÐÊÓ½Ç£¬SQÉÏµº*****************************************************/
+	/********************************************QÇÐÊÓ½Ç£¬SQÉýÆð*****************************************************/
 	static uint8_t Qflag = 0;
 	if (key->v & Key_Q)
 	{
@@ -362,6 +370,17 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		VAL_LIMIT(Chassis_Speed_Ref.forward_back_ref,-1500,1500);
 		VAL_LIMIT(Chassis_Speed_Ref.left_right_ref,-2500,2500);
 	}
+	
+	if(key->v & Key_R)
+	{
+		if(Shiftflag)Chassis_Speed_Ref.rotate_ref += 10000;
+		else Chassis_Speed_Ref.rotate_ref += 6000;
+	}
+	if(key->v & Key_F)
+	{
+		if(Shiftflag)Chassis_Speed_Ref.rotate_ref += -10000;
+		else Chassis_Speed_Ref.rotate_ref += -6000;
+	}
 }
 
 void RemoteShootControl(int8_t s1)
@@ -419,7 +438,7 @@ void Remote_Rx(unsigned char *RxMsg,RC_Ctl_t *RCData)
 	RCData->mouse.press_l = RxMsg[12];
 	RCData->mouse.press_r = RxMsg[13];
 
-	RCData->key.v = ((int16_t)RxMsg[14]);
+	RC_CtrlData.key.v = ((int16_t)RxMsg[14]|(int16_t)RxMsg[15]<<8);
 
 	SetInputMode(&(RCData->rc));
 

@@ -21,15 +21,32 @@ else if(val>=max)\
 	val = max;\
 }\
 
+#define Key_V		0x4000
+#define Key_C		0x2000
+#define Key_X		0x1000
+#define Key_Z		0x0800
+#define Key_G		0x0400
+#define Key_F		0x0200
+#define Key_R		0x0100
+#define Key_E		0x0080
+#define Key_Q		0x0040
+#define Key_Ctrl	0x0020
+#define Key_Shift	0x0010
+#define Key_D		0x0008
+#define Key_A		0x0004
+#define Key_S		0x0002
+#define Key_W		0x0001
+#define Key_B   0x8000
 
-#define Key_W 0x01   //向前
-#define Key_A 0x04   //向左
-#define Key_S 0x02   //向后
-#define Key_D 0x08   //向右
-#define Key_Q 0x40   //底盘旋转  （切视角）
-#define Key_E 0x80   //下降      （救援）
-#define Key_Ctrl 0x20  //
-#define Key_Shift 0x10 //上升     （取弹位置切换）
+
+//#define Key_W 0x01   //向前
+//#define Key_A 0x04   //向左
+//#define Key_S 0x02   //向后
+//#define Key_D 0x08   //向右
+//#define Key_Q 0x40   //底盘旋转  （切视角）
+//#define Key_E 0x80   //下降      （救援）
+//#define Key_Ctrl 0x20  //
+//#define Key_Shift 0x10 //上升     （取弹位置切换）
 
 typedef __packed struct
 {
