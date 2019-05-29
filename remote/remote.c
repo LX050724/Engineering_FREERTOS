@@ -185,34 +185,81 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	
 	/***************************************右键弹舱**********************************************************/
 
-	static uint8_t mrflag  = 0;
-	static uint8_t DC_flag = 0;
+	//static uint8_t mrflag  = 0;
+	//static uint8_t DC_flag = 0;
 	if (mouse->press_r)
 	{
-		if(mrflag == 0)
+//		if(mrflag == 0)
+//		{
+//			mrflag =1;
+//			if (DC_flag == 0)
+//			{
+//				HAL_GPIO_WritePin(dancang_GPIO_Port,dancang_Pin,GPIO_PIN_RESET);
+//				DC_flag = 1;
+//			}
+//			else
+//			{
+//				HAL_GPIO_WritePin(dancang_GPIO_Port,dancang_Pin,GPIO_PIN_SET);
+//				DC_flag = 0;
+//			}
+//		}
+		
+		HAL_GPIO_WritePin(dancang_GPIO_Port,dancang_Pin,GPIO_PIN_RESET);
+	}
+	else //mrflag = 0;
+	{
+		HAL_GPIO_WritePin(dancang_GPIO_Port,dancang_Pin,GPIO_PIN_SET);
+	}
+	
+	
+	/******************************************E降下*******************************************************/
+
+	static uint8_t Eflag = 0;
+	static uint8_t rescueflag = 0;
+	if (key->v & Key_E)
+	{
+		if (Eflag == 0)
 		{
-			mrflag =1;
-			if (DC_flag ==0)
+			Eflag = 1;
+			if (GetMod == 0)//正常模式，救援
 			{
-				HAL_GPIO_WritePin(dancang_GPIO_Port,dancang_Pin,GPIO_PIN_RESET);
-				DC_flag = 1;
+				//Rescue;
+				if(rescueflag == 0)
+				{
+					HAL_GPIO_WritePin(rescue_GPIO_Port,rescue_Pin,GPIO_PIN_SET);
+					rescueflag = 1;
+				}
+				else
+				{
+					HAL_GPIO_WritePin(rescue_GPIO_Port,rescue_Pin,GPIO_PIN_RESET);
+					rescueflag = 0;
+				}
 			}
 			else
 			{
-				HAL_GPIO_WritePin(dancang_GPIO_Port,dancang_Pin,GPIO_PIN_SET);
-				DC_flag = 0;
+				Location_mode_Sent(Long0);
+				HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(Q1_GPIO_Port, Q1_Pin, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(Q2_GPIO_Port, Q2_Pin, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_SET);
+				//云台转向后方，图传转向前方
+				Cradle_back;           //摇篮向后
+				perspective_forward;   //透视向前
+		   	View_mode2 = 1;
+				View_mode1 = 0;
+				GetMod = 0;//清除标志
 			}
 		}
 	}
-	else mrflag = 0;
-
+	else Eflag = 0;
+	
 	/********************************************Q切视角，SQ升起*****************************************************/
 	static uint8_t Qflag = 0;
 	if (key->v & Key_Q)
 	{
 		if (Qflag==0)
 		{
-			if (Shiftflag==1)
+			if (Shiftflag==1&&GetMod==0)
 			{
 				GetMod = 1;//标记展开
 				HAL_GPIO_WritePin(Q1_GPIO_Port, Q1_Pin, GPIO_PIN_RESET);
@@ -224,6 +271,9 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 				Cradle_forward;
 				View_mode1 = 1;
 				View_mode2 = 0;
+				//收救援
+				HAL_GPIO_WritePin(rescue_GPIO_Port,rescue_Pin,GPIO_PIN_SET);
+				rescueflag = 0;
 			}
 			else if(Shiftflag==0)
 			{
@@ -265,83 +315,45 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	} 
 	else Qflag = 0;
 	
-	/******************************************E降下*******************************************************/
-
-	static uint8_t Eflag = 0;
-	static uint8_t rescueflag = 0;
-	if (key->v & Key_E)
-	{
-		if (Eflag == 0)
-		{
-			Eflag = 1;
-			if (GetMod == 0)//正常模式，救援
-			{
-				//Rescue;
-				if(rescueflag == 0)
-				{
-					HAL_GPIO_WritePin(rescue_GPIO_Port,rescue_Pin,GPIO_PIN_RESET);
-					rescueflag = 1;
-				}
-				else
-				{
-					HAL_GPIO_WritePin(rescue_GPIO_Port,rescue_Pin,GPIO_PIN_SET);
-					rescueflag = 0;
-				}
-			}
-			else
-			{
-				Location_mode_Sent(Long0);
-				HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);
-				HAL_GPIO_WritePin(Q1_GPIO_Port, Q1_Pin, GPIO_PIN_SET);
-				HAL_GPIO_WritePin(Q2_GPIO_Port, Q2_Pin, GPIO_PIN_SET);
-				HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_SET);
-				//云台转向后方，图传转向前方
-				Cradle_back;           //摇篮向后
-				perspective_forward;   //透视向前
-		   	View_mode2 = 1;
-				View_mode1 = 0;
-				GetMod = 0;//清除标志
-			}
-		}
-	}
-	else Eflag = 0;
-	
 	/****************************************左键  夹取，扔**********************************************************/
 
 	if ((mouse->press_l) || (ML_Auto_flag == 1))
 	{
-		if (ML_Auto_flag == 0)
+		if(GetMod!=0)
 		{
-			ML_Auto_flag = 1;
-			HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_RESET);//下去
-			TIM7->CNT = 0;
-		}
-		if (ML_Auto_flag == 1)
-		{
-			if (GetMod == 2)
+			if (ML_Auto_flag == 0)
 			{
-				if ((TIM7->CNT) > 4000)HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_SET);//夹
-				if ((TIM7->CNT) > 6000)HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);//抬
-				if ((TIM7->CNT) > 16000)HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_RESET); //扔
-				if ((TIM7->CNT) > 17500)HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_RESET); //松夹子
-				if ((TIM7->CNT) > 20000)
-				{
-					HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);//抬
-					ML_Auto_flag = 0;
-				}
+				ML_Auto_flag = 1;
+				HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_RESET);//下去
+				TIM7->CNT = 0;
 			}
-			else if (GetMod == 1)
+			if (ML_Auto_flag == 1)
 			{
-				if ((TIM7->CNT) > 4000)HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_SET);//夹
-				if ((TIM7->CNT) > 6000)HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);//抬
-				if ((TIM7->CNT) > 16000)Location_mode_Sent(630);
-				if ((TIM7->CNT) > 25000)HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_RESET); //扔
-				if ((TIM7->CNT) > 26000)HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_RESET); //松夹子
-				if ((TIM7->CNT) > 29000)
+				if (GetMod == 2)
 				{
-					HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);//抬
-					Location_mode_Sent(Long2);
-					ML_Auto_flag = 0;
+					if ((TIM7->CNT) > 4000)HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_SET);//夹
+					if ((TIM7->CNT) > 6000)HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);//抬
+					if ((TIM7->CNT) > 16000)HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_RESET); //扔
+					if ((TIM7->CNT) > 17500)HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_RESET); //松夹子
+					if ((TIM7->CNT) > 20000)
+					{
+						HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);//抬
+						ML_Auto_flag = 0;
+					}
+				}
+				else if (GetMod == 1)
+				{
+					if ((TIM7->CNT) > 4000)HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_SET);//夹
+					if ((TIM7->CNT) > 6000)HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);//抬
+					if ((TIM7->CNT) > 16000)Location_mode_Sent(630);
+					if ((TIM7->CNT) > 25000)HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_RESET); //扔
+					if ((TIM7->CNT) > 26000)HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_RESET); //松夹子
+					if ((TIM7->CNT) > 29000)
+					{
+						HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);//抬
+						Location_mode_Sent(Long2);
+						ML_Auto_flag = 0;
+					}
 				}
 			}
 		}
@@ -381,6 +393,15 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		if(Shiftflag)Chassis_Speed_Ref.rotate_ref += -10000;
 		else Chassis_Speed_Ref.rotate_ref += -6000;
 	}
+	
+	
+	static uint16_t Rest_time = 0;
+	if(key->v &(Key_Shift|Key_Z))
+	{
+		Rest_time++;
+		if(Rest_time >= 350)
+			HAL_NVIC_SystemReset();
+	}else Rest_time = 0;
 }
 
 void RemoteShootControl(int8_t s1)
@@ -399,7 +420,7 @@ void RemoteShootControl(int8_t s1)
 		}
 		case 3://正常
 		{
-
+			
 			break;
 		}
 	}

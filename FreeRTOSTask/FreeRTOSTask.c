@@ -155,8 +155,8 @@ void Auto_task(void *pvParameters)
 				osDelay(700);
 				
 			//	Get_PID_Expect(2500);   //前轮上台阶 后轮靠近台阶
-			Get_PID_Expect_qian(2800);
-			Get_PID_Expect_hou(2500);
+				Get_PID_Expect_qian(3800);
+				Get_PID_Expect_hou(3500);
 				while(RF4==1) vTaskDelay(1);	//等待传感器 检测辅助轮上台阶
 				
 				Get_PID_Expect(500);  //后轮撞上后 反弹 车往前开 轻触台阶
@@ -165,7 +165,7 @@ void Auto_task(void *pvParameters)
 				HAL_GPIO_WritePin(Q2_GPIO_Port,Q2_Pin,GPIO_PIN_SET); //后腿收
 				osDelay(700);          //等待后腿收
 				
-				Get_PID_Expect(4000);  //前后轮全速前进 爬台阶
+				Get_PID_Expect(5000);  //前后轮全速前进 爬台阶
 				
 				osDelay(700);          //以4000速度行进700毫秒
 				
@@ -183,7 +183,7 @@ void Auto_task(void *pvParameters)
 				/*下岛流程*/
 				HAL_GPIO_WritePin(Q_GPIO_Port,Q_Pin,GPIO_PIN_RESET);//气缸弹出
 				
-				Get_PID_Expect(-1000);
+				Get_PID_Expect(-2000);
 				
 				while((RF2==0)||(RF3==0))osDelay(1);	//等待传感器
 					
@@ -192,7 +192,7 @@ void Auto_task(void *pvParameters)
 				HAL_GPIO_WritePin(Q2_GPIO_Port,Q2_Pin,GPIO_PIN_RESET);//后退伸
 				osDelay(700);/*等待后退伸*/
 				
-				Get_PID_Expect(-1800);
+				Get_PID_Expect(-2800);
 				
 			//	while((RF0==0)||(RF1==0))osDelay(1);	//等待传感器
 				while(RF0==0)vTaskDelay(1);	//等待传感器
