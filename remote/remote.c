@@ -47,8 +47,8 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	static uint16_t forward_back_speed = 0;
 	static uint16_t left_right_speed = 0;
 
-	forward_back_speed =  5300;
-	left_right_speed = 5300;
+	forward_back_speed =  4800;
+	left_right_speed = 4800;
 	
 	//Shift¼ÓËÙ
 	if(key->v & Key_Shift)
@@ -396,7 +396,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	
 	
 	static uint16_t Rest_time = 0;
-	if(key->v &(Key_Shift|Key_Z))
+	if((key->v &Key_Shift)&&(key->v & Key_Z))
 	{
 		Rest_time++;
 		if(Rest_time >= 350)
