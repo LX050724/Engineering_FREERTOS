@@ -155,8 +155,8 @@ void Auto_task(void *pvParameters)
 				osDelay(700);
 				
 			//	Get_PID_Expect(2500);   //前轮上台阶 后轮靠近台阶
-				Get_PID_Expect_qian(3800);
-				Get_PID_Expect_hou(3500);
+				Get_PID_Expect_qian(3500);
+				Get_PID_Expect_hou(3000);
 				while(RF4==1) vTaskDelay(1);	//等待传感器 检测辅助轮上台阶
 				
 				Get_PID_Expect(500);  //后轮撞上后 反弹 车往前开 轻触台阶
@@ -167,7 +167,7 @@ void Auto_task(void *pvParameters)
 				
 				Get_PID_Expect(5000);  //前后轮全速前进 爬台阶
 				
-				osDelay(700);          //以4000速度行进700毫秒
+				osDelay(1000);          //以4000速度行进100000毫秒
 				
 				Get_PID_Expect(0);  //停
 				
