@@ -28,6 +28,7 @@ JLinkLog.txt
 /Drivers/
 /Middlewares/
 /MDK-ARM/*/
+/Visual Studio Project/
 
 # Log Files
 *.log

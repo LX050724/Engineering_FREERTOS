@@ -3,10 +3,10 @@
 short can_stop[4]= {0,0,0,0};
 unsigned char Auto_flag;
 
-uint8_t GetMod=0;//È¡µ¯Õ¹¿ª±êÖ¾Î» 0:Ëõ  1:Õ¹¿ªÒ»ÅÅÎ»ÖÃ  2:Õ¹¿ª¶þÅÅÎ»ÖÃ
+uint8_t GetMod=0;//å–å¼¹å±•å¼€æ ‡å¿—ä½ 0:ç¼©  1:å±•å¼€ä¸€æŽ’ä½ç½®  2:å±•å¼€äºŒæŽ’ä½ç½®
 uint8_t View_mode1 = 0,View_mode2 = 1;
 
-static InputMode_e inputmode = REMOTE_INPUT;   //ÊäÈëÄ£Ê½Éè¶¨
+static InputMode_e inputmode = REMOTE_INPUT;   //è¾“å…¥æ¨¡å¼è®¾å®š
 RC_Ctl_t RC_CtrlData;   //remote control data
 
 u8 down_play_flag = 1, down_FB_flag = 1,down_RL_flag = 1;
@@ -16,21 +16,21 @@ int16_t FB_SD,RL_SD;
 
 unsigned char keyQ_flag=0,keyE_flag=0,keymr_flag=0,Shiftflag=0,ML_Auto_flag=0;
 
-//ÊäÈëÄ£Ê½ÉèÖÃ
+//è¾“å…¥æ¨¡å¼è®¾ç½®
 
 void SetInputMode(Remote *rc)
 {
 	if(rc->s2 == 1)
 	{
-		inputmode = REMOTE_INPUT;     //Ò£¿ØÆ÷ÊäÈë
+		inputmode = REMOTE_INPUT;     //é¥æŽ§å™¨è¾“å…¥
 	}
 	else if(rc->s2 == 3)
 	{
-		inputmode = KEY_MOUSE_INPUT;  //Êó±ê¼üÅÌÊäÈë
+		inputmode = KEY_MOUSE_INPUT;  //é¼ æ ‡é”®ç›˜è¾“å…¥
 	}
 	else if(rc->s2 == 2)
 	{
-		HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_RESET); //Í£Ö¹
+		HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_RESET); //åœæ­¢
 		Auto_flag=0;
 		inputmode = STOP;
 	}
@@ -41,7 +41,7 @@ InputMode_e GetInputMode()
 	return inputmode;
 }
 
-  /********Êó±ê°´¼ü¿ØÖÆ¹¤³Ì³µ*********/
+  /********é¼ æ ‡æŒ‰é”®æŽ§åˆ¶å·¥ç¨‹è½¦*********/
 void MouseKeyControlProcess(Mouse *mouse, Key *key)  
 {
 	static uint16_t forward_back_speed = 0;
@@ -50,14 +50,14 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	forward_back_speed =  5300;
 	left_right_speed = 5300;
 	
-	//Shift¼ÓËÙ
+	//ShiftåŠ é€Ÿ
 	if(key->v & Key_Shift)
 	{
 		forward_back_speed =  7000;
 		left_right_speed = 7000;
 	}
 	
-	if(key->v & Key_W)  // key: w   Ç°½ø
+	if(key->v & Key_W)  // key: w   å‰è¿›
 	{
 		ramp = CHASSIS_RAMP_FB;
 
@@ -73,7 +73,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		play_flag = 0;
 
 	}
-	else if(key->v & Key_S) //key: s  ºóÍË
+	else if(key->v & Key_S) //key: s  åŽé€€
 	{
 		ramp = CHASSIS_RAMP_FB;
 
@@ -93,7 +93,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		Chassis_Speed_Ref.forward_back_ref = 0;
 	}
 	
-	if(key->v & Key_D)  // key: d ÓÒÒÆ
+	if(key->v & Key_D)  // key: d å³ç§»
 	{
 		ramp = CHASSIS_RAMP_RL;
 
@@ -107,7 +107,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		Chassis_Speed_Ref.left_right_ref = left_right_speed * Slope(70000,ramp);
 		rr_flag = 0;
 	}
-	else if(key->v & Key_A) //key: a ×óÒÆ
+	else if(key->v & Key_A) //key: a å·¦ç§»
 	{
 		ramp = CHASSIS_RAMP_RL;
 		down_RL_flag = 0;
@@ -131,36 +131,36 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	
 	
 	/*************************************************************************************************/
-	/*******************************************ÌØÊâ²Ù¿Ø**********************************************/
+	/*******************************************ç‰¹æ®Šæ“æŽ§**********************************************/
 	/*************************************************************************************************/
 
-	/***********************************************SHIFT¿ØÖÆ,È¡µ¯Î»ÖÃÇÐ»»**************************************************/
-	if (key->v & Key_Shift)
+	/***********************************************SHIFTæŽ§åˆ¶,å–å¼¹ä½ç½®åˆ‡æ¢**************************************************/
+	if (key->v & Key_Shift) //ç¬¬ä¸€æŽ’å’Œç¬¬äºŒæŽ’ï¼Œæ“ä½œæ‰‹ä¼šæœ‰è§†è§’åˆ‡æ¢ï¼ˆç¬¬äºŒæŽ’æ—¶å›¾ä¼ ç•¥å¾®å‘å‰ï¼‰
 	{
 		if (Shiftflag==0)
 		{
 			if (GetMod == 1)
 			{
 				Location_mode_Sent(Long1);
-				GetMod = 2;//±ê¼Ç¶þÅÅÎ»ÖÃ
+				GetMod = 2;//æ ‡è®°äºŒæŽ’ä½ç½®
 			}
 			else if (GetMod == 2)
 			{
 				Location_mode_Sent(Long2);
-				GetMod = 1;//±ê¼ÇÒ»ÅÅÎ»ÖÃ
+				GetMod = 1;//æ ‡è®°ä¸€æŽ’ä½ç½®
 			}
 		}
 		Shiftflag = 1;
 	}
 	else Shiftflag = 0;
-	/********************************************Shift+Ctrl£¬CtrlÉÏÏÂµº*****************************************************/
+	/********************************************Shift+Ctrlï¼ŒCtrlä¸Šä¸‹å²›*****************************************************/
 	static uint16_t SCtime = 0,Ctime = 0;
 	if(key->v & Key_Ctrl)
 	{
 		if (Shiftflag == 0)
 		{
 			Ctime++;
-			if(Ctime==140)
+			if(Ctime==70)
 			{
 				HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 				Auto_flag = 2;
@@ -169,7 +169,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		else if(Shiftflag==1)
 		{
 			SCtime++;
-			if(SCtime==140)
+			if(SCtime==70)
 			{
 				HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 				Auto_flag = 1;
@@ -183,7 +183,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	}
 
 	
-	/***************************************ÓÒ¼üµ¯²Õ**********************************************************/
+	/***************************************å³é”®å¼¹èˆ±**********************************************************/
 
 	//static uint8_t mrflag  = 0;
 	//static uint8_t DC_flag = 0;
@@ -212,16 +212,16 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	}
 	
 	
-	/******************************************E½µÏÂ*******************************************************/
-
+	/******************************************Eé™ä¸‹*******************************************************/
+    
 	static uint8_t Eflag = 0;
 	static uint8_t rescueflag = 0;
-	if (key->v & Key_E)
+	if (key->v & Key_E)  //shift+Qå¤„äºŽæŠ“å–çŠ¶æ€ï¼Œä¸è®ºå¦‚ä½•å¿…é¡»æŒ‰ä¸‹ä¸€æ¬¡Eæ‰èƒ½ä¸‹å²›
 	{
 		if (Eflag == 0)
 		{
 			Eflag = 1;
-			if (GetMod == 0)//Õý³£Ä£Ê½£¬¾ÈÔ®
+			if (GetMod == 0)//æ­£å¸¸æ¨¡å¼ï¼Œæ•‘æ´
 			{
 				//Rescue;
 				if(rescueflag == 0)
@@ -242,18 +242,18 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 				HAL_GPIO_WritePin(Q1_GPIO_Port, Q1_Pin, GPIO_PIN_SET);
 				HAL_GPIO_WritePin(Q2_GPIO_Port, Q2_Pin, GPIO_PIN_SET);
 				HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_SET);
-				//ÔÆÌ¨×ªÏòºó·½£¬Í¼´«×ªÏòÇ°·½
-				Cradle_back;           //Ò¡ÀºÏòºó
-				perspective_forward;   //Í¸ÊÓÏòÇ°
-		   	View_mode2 = 1;
+				//äº‘å°è½¬å‘åŽæ–¹ï¼Œå›¾ä¼ è½¬å‘å‰æ–¹
+				Cradle_back;           //æ‘‡ç¯®å‘åŽ
+				perspective_forward;   //é€è§†å‘å‰
+		     	View_mode2 = 1;
 				View_mode1 = 0;
-				GetMod = 0;//Çå³ý±êÖ¾
+				GetMod = 0;//æ¸…é™¤æ ‡å¿—
 			}
 		}
 	}
 	else Eflag = 0;
 	
-	/********************************************QÇÐÊÓ½Ç£¬SQÉýÆð*****************************************************/
+	/********************************************Qåˆ‡è§†è§’ï¼ŒSQå‡èµ·*****************************************************/
 	static uint8_t Qflag = 0;
 	if (key->v & Key_Q)
 	{
@@ -261,17 +261,17 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 		{
 			if (Shiftflag==1&&GetMod==0)
 			{
-				GetMod = 1;//±ê¼ÇÕ¹¿ª
+				GetMod = 1;//æ ‡è®°å±•å¼€
 				HAL_GPIO_WritePin(Q1_GPIO_Port, Q1_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(Q2_GPIO_Port, Q2_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_RESET);
 				Location_mode_Sent(Long2);
-				//Í¼´«×ªÏòºó·½£¬ÔÆÌ¨¿´È¡µ¯
+				//å›¾ä¼ è½¬å‘åŽæ–¹ï¼Œäº‘å°çœ‹å–å¼¹
 				perspective_back;
 				Cradle_forward;
 				View_mode1 = 1;
 				View_mode2 = 0;
-				//ÊÕ¾ÈÔ®
+				//æ”¶æ•‘æ´
 				HAL_GPIO_WritePin(rescue_GPIO_Port,rescue_Pin,GPIO_PIN_SET);
 				rescueflag = 0;
 			}
@@ -279,32 +279,32 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 			{
 				if (GetMod==0)
 				{
-					//Õý³£Ä£Ê½ÏÂ×ªÍ¼´«
+					//æ­£å¸¸æ¨¡å¼ä¸‹è½¬å›¾ä¼ 
 					if (View_mode1 == 0)
 					{
-						//Í¼´«¿´Ç°·½
+						//å›¾ä¼ çœ‹å‰æ–¹
 						perspective_back;
 						View_mode1 = 1;
 					}
 					else
 					{
-						//Í¼´«¿´ºó·½
+						//å›¾ä¼ çœ‹åŽæ–¹
 						perspective_forward;
 						View_mode1 = 0;
 					}
 				}
 				else
 				{
-					//È¡µ¯Ä£Ê½×ªÔÆÌ¨
+					//å–å¼¹æ¨¡å¼è½¬äº‘å°
 					if (View_mode2 ==0)
 					{
-						//ÔÆÌ¨¿´ºó·½
+						//äº‘å°çœ‹åŽæ–¹
 						Cradle_back;
 						View_mode2 =1;
 					}
 					else
 					{
-						//ÔÆÌ¨¿´Ç°·½
+						//äº‘å°çœ‹å‰æ–¹
 						Cradle_forward;
 						View_mode2 = 0;
 					}
@@ -315,42 +315,42 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	} 
 	else Qflag = 0;
 	
-	/****************************************×ó¼ü  ¼ÐÈ¡£¬ÈÓ**********************************************************/
+	/****************************************å·¦é”®  å¤¹å–ï¼Œæ‰”**********************************************************/
 
-	if ((mouse->press_l) || (ML_Auto_flag == 1))
+	if ((mouse->press_l) || (ML_Auto_flag == 1)) //æ­¤æ®µæ‰€æœ‰æ—¶é—´å‚æ•°éƒ½ä¸º0.1ms
 	{
 		if(GetMod!=0)
 		{
 			if (ML_Auto_flag == 0)
 			{
 				ML_Auto_flag = 1;
-				HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_RESET);//ÏÂÈ¥
+				HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_RESET);//ä¸‹åŽ»
 				TIM7->CNT = 0;
 			}
 			if (ML_Auto_flag == 1)
 			{
 				if (GetMod == 2)
 				{
-					if ((TIM7->CNT) > 4000)HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_SET);//¼Ð
-					if ((TIM7->CNT) > 6000)HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);//Ì§
-					if ((TIM7->CNT) > 16000)HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_RESET); //ÈÓ
-					if ((TIM7->CNT) > 17500)HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_RESET); //ËÉ¼Ð×Ó
+					if ((TIM7->CNT) > 4000)HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_SET);//å¤¹
+					if ((TIM7->CNT) > 6000)HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);//æŠ¬
+					if ((TIM7->CNT) > 16000)HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_RESET); //æ‰”
+					if ((TIM7->CNT) > 17500)HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_RESET); //æ¾å¤¹å­
 					if ((TIM7->CNT) > 20000)
 					{
-						HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);//Ì§
+						HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);//æŠ¬
 						ML_Auto_flag = 0;
 					}
 				}
 				else if (GetMod == 1)
 				{
-					if ((TIM7->CNT) > 4000)HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_SET);//¼Ð
-					if ((TIM7->CNT) > 6000)HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);//Ì§
-					if ((TIM7->CNT) > 16000)Location_mode_Sent(630);
-					if ((TIM7->CNT) > 25000)HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_RESET); //ÈÓ
-					if ((TIM7->CNT) > 26000)HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_RESET); //ËÉ¼Ð×Ó
+					if ((TIM7->CNT) > 4000)HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_SET);//å¤¹
+					if ((TIM7->CNT) > 6000)HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);//æŠ¬
+					if ((TIM7->CNT) > 16000)Location_mode_Sent(630);  //ç”µæŽ¨æ†å‡ºåŽ»çš„ä½ç½®
+					if ((TIM7->CNT) > 25000)HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_RESET); //æ‰”
+					if ((TIM7->CNT) > 26000)HAL_GPIO_WritePin(Q4_GPIO_Port, Q4_Pin, GPIO_PIN_RESET); //æ¾å¤¹å­
 					if ((TIM7->CNT) > 29000)
 					{
-						HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);//Ì§
+						HAL_GPIO_WritePin(Q3_GPIO_Port, Q3_Pin, GPIO_PIN_SET);//æŠ¬
 						Location_mode_Sent(Long2);
 						ML_Auto_flag = 0;
 					}
@@ -363,26 +363,29 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	VAL_LIMIT(mouse->x, -120, 120); 
 	VAL_LIMIT(mouse->y, -120, 120); 
 	Chassis_Speed_Ref.rotate_ref=mouse->x*-80;
-	/****************************************·½ÏòÐÞÕý¼°ÌØÊâËÙ¶ÈÏÞÖÆ**********************************/
+	/****************************************æ–¹å‘ä¿®æ­£åŠç‰¹æ®Šé€Ÿåº¦é™åˆ¶**********************************/
 	
-//	if((View_mode1 == 1)&&(View_mode2 == 0))//Í¼´«¿´ºó£¬ÔÆÌ¨¿´Ç°
-//	{
-//		Chassis_Speed_Ref.left_right_ref = -Chassis_Speed_Ref.left_right_ref;
-//		Chassis_Speed_Ref.rotate_ref     = -Chassis_Speed_Ref.rotate_ref;
-//	}
+	if((View_mode1 == 1)&&(View_mode2 == 0))//å›¾ä¼ çœ‹åŽï¼Œäº‘å°çœ‹å‰
+	{
+		short buff = 0;
+		buff = Chassis_Speed_Ref.left_right_ref;
+		Chassis_Speed_Ref.left_right_ref = -Chassis_Speed_Ref.forward_back_ref;
+		Chassis_Speed_Ref.forward_back_ref = buff;
+	}
 	
-	if((View_mode1 == 1)&&(View_mode2 == 1))//Í¼´«¿´ºó£¬ÔÆÌ¨¿´ºó
+	if((View_mode1 == 1)&&(View_mode2 == 1))//å›¾ä¼ çœ‹åŽï¼Œäº‘å°çœ‹åŽ
 	{
 		Chassis_Speed_Ref.forward_back_ref = -Chassis_Speed_Ref.forward_back_ref;
 		Chassis_Speed_Ref.rotate_ref = -Chassis_Speed_Ref.rotate_ref;
 	}
 	
-	if(GetMod != 0)//Èç¹û´¦ÓÚÈ¡µ¯£¬ÏÞÖÆËÙ¶È
+	if(GetMod != 0)//å¦‚æžœå¤„äºŽå–å¼¹ï¼Œé™åˆ¶é€Ÿåº¦
 	{
-		VAL_LIMIT(Chassis_Speed_Ref.forward_back_ref,-1500,1500);
-		VAL_LIMIT(Chassis_Speed_Ref.left_right_ref,-2500,2500);
+		VAL_LIMIT(Chassis_Speed_Ref.forward_back_ref,-2500,2500);
+		VAL_LIMIT(Chassis_Speed_Ref.left_right_ref,-4000,4000);
 	}
 	
+	//è‡ªæ—‹
 	if(key->v & Key_R)
 	{
 		if(Shiftflag)Chassis_Speed_Ref.rotate_ref += 10000;
@@ -399,7 +402,7 @@ void MouseKeyControlProcess(Mouse *mouse, Key *key)
 	if((key->v &Key_Shift)&&(key->v & Key_Z))
 	{
 		Rest_time++;
-		if(Rest_time >= 350)
+		if(Rest_time >= 100)
 			HAL_NVIC_SystemReset();
 	}else Rest_time = 0;
 }
@@ -408,17 +411,17 @@ void RemoteShootControl(int8_t s1)
 {
 	switch(s1)
 	{
-		case 1://ÉÏµºÄ£Ê½
+		case 1://ä¸Šå²›æ¨¡å¼
 		{
 			Auto_flag=1;
 			break;
 		}
-		case 2://ÏÂµºÄ£Ê½
+		case 2://ä¸‹å²›æ¨¡å¼
 		{
 			Auto_flag=2;
 			break;
 		}
-		case 3://Õý³£
+		case 3://æ­£å¸¸
 		{
 			
 			break;
@@ -426,7 +429,7 @@ void RemoteShootControl(int8_t s1)
 	}
 }
 
-//Ò£¿ØÆ÷¿ØÖÆÄ£Ê½´¦Àí
+//é¥æŽ§å™¨æŽ§åˆ¶æ¨¡å¼å¤„ç†
 void RemoteControlProcess(Remote *rc)
 {
 
@@ -467,14 +470,14 @@ void Remote_Rx(unsigned char *RxMsg,RC_Ctl_t *RCData)
 	{
 		case REMOTE_INPUT:
 		{
-			//Ò£¿ØÆ÷¿ØÖÆÄ£Ê½
+			//é¥æŽ§å™¨æŽ§åˆ¶æ¨¡å¼
 			RemoteControlProcess(&(RCData->rc));
 		}
 		break;
 
 		case KEY_MOUSE_INPUT:
 		{
-			//¼üÊó¿ØÖÆÄ£Ê½
+			//é”®é¼ æŽ§åˆ¶æ¨¡å¼
 			MouseKeyControlProcess(&(RCData->mouse),&(RCData->key));
 		}
 		break;
@@ -489,5 +492,7 @@ void Remote_Rx(unsigned char *RxMsg,RC_Ctl_t *RCData)
 }
 
 
+	
+	
 	
 	

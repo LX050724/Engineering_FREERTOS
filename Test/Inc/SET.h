@@ -37,9 +37,9 @@ extern "C" {
 #define KI 0
 #define KD 3
 
-#define Long2 250
-#define Long1 850
-#define Long0 0
+#define Long2 250  //第一排电推杆位置   
+#define Long1 850  //第 二 排
+#define Long0 0 
 
 #ifdef __cplusplus
 }

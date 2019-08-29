@@ -3,12 +3,12 @@ unsigned char i;
 
 void StartTask(void)
 {
-	/*´´½¨¶þÖµÐÅºÅÁ¿*/
+	/*åˆ›å»ºäºŒå€¼ä¿¡å·é‡*/
 	Remote_Semaphore= xSemaphoreCreateBinary();
 	
-	/*´´½¨¶ÓÁÐ*/
+	/*åˆ›å»ºé˜Ÿåˆ—*/
 	
-	/*ÍâÉè³õÊ¼»¯*/
+	/*å¤–è?¾åˆå§‹åŒ–*/
 	CanFilter_Init(&hcan1);
 	HAL_CAN_Start(&hcan1);
 	HAL_CAN_ActivateNotification(&hcan1,CAN_IT_RX_FIFO0_MSG_PENDING);
@@ -32,8 +32,8 @@ void StartTask(void)
 	PID_Init();
 	Chassis_Speed_Ref_Init();
 	
-	/*´´½¨ÈÎÎñ*/
-	//PID½ø³Ì
+	/*åˆ›å»ºä»»åŠ¡*/
+	//PIDè¿›ç¨‹
 	xTaskCreate((TaskFunction_t)PID_task,
 		(const char *)"PID_task",
 		(uint16_t)150,
@@ -41,7 +41,7 @@ void StartTask(void)
 		(UBaseType_t)1,
 		(TaskHandle_t *)&PID_task_Handler);
 
-	//Ò£¿ØÆ÷Êý¾Ý´¦Àí%USARTinterrupt
+	//é¥æŽ§å™¨æ•°æ?å¤„ç†%USARTinterrupt
 	xTaskCreate((TaskFunction_t)Remote_task,
 		(const char *)"Remote_task",
 		(uint16_t)150,
@@ -49,7 +49,7 @@ void StartTask(void)
 		(UBaseType_t)1,
 		(TaskHandle_t *)&Remote_task_Handler);
 		
-	//×Ô¶¯Á÷³Ì
+	//è‡?åŠ¨æµç¨?
 	xTaskCreate((TaskFunction_t)Auto_task,
 		(const char *)"Auto_task",
 		(uint16_t)100,
@@ -58,7 +58,7 @@ void StartTask(void)
 		(TaskHandle_t *)&Auto_task_Handler);
 }
 
-/*PID½ø³Ì*/
+/*PIDè¿›ç¨‹*/
 TaskHandle_t PID_task_Handler;
 void PID_task(void *pvParameters)
 {
@@ -75,7 +75,7 @@ void PID_task(void *pvParameters)
 	
 	while (1)
 	{
-		if (Auto_flag == 0)PID_Expect();//Èç¹û´¦ÓÚ×Ô¶¯Ä£Ê½£¬²»´ÓÒ£¿ØÆ÷»ñÈ¡ÆÚÍû
+		if (Auto_flag == 0)PID_Expect();//å¦‚æžœå¤„äºŽè‡?åŠ¨æ¨¡å¼ï¼Œä¸ä»Žé¥æŽ§å™¨èŽ·å–æœŸæœ?
 
 		PID_Control(pRM3510_PID_Expect->Chassis_Motor_PID_Expect_1,
 			pRM3510_Actual_Speedt->Chassis_Motor_Actual_Speed_1,
@@ -108,7 +108,7 @@ void PID_task(void *pvParameters)
 	}
 }
 
-/*Ò£¿ØÆ÷Êý¾Ý´¦Àí%USARTinterrupt*/
+/*é¥æŽ§å™¨æ•°æ?å¤„ç†%USARTinterrupt*/
 SemaphoreHandle_t Remote_Semaphore;
 TaskHandle_t Remote_task_Handler;
 void Remote_task(void *pvParameters)
@@ -119,19 +119,19 @@ void Remote_task(void *pvParameters)
 	
 	while (1)
 	{
-		err = xSemaphoreTake(Remote_Semaphore, portMAX_DELAY);	//»ñÈ¡ÐÅºÅÁ¿
-		if (err == pdTRUE)										//»ñÈ¡ÐÅºÅÁ¿³É¹¦
+		err = xSemaphoreTake(Remote_Semaphore, portMAX_DELAY);	//èŽ·å–ä¿¡å·é‡?
+		if (err == pdTRUE)										//èŽ·å–ä¿¡å·é‡æˆåŠ?
 		{
 			Remote_Rx(usart1_dma_buff,pRC_CtrlData);
 		}
 		else if (err == pdFALSE)
 		{
-			vTaskDelay(10);      //ÑÓÊ±10ms£¬Ò²¾ÍÊÇ10¸öÊ±ÖÓ½ÚÅÄ	
+			vTaskDelay(10);      //å»¶æ—¶10msï¼Œä¹Ÿå°±æ˜¯10ä¸?æ—¶é’ŸèŠ‚æ‹	
 		}
 	}
 }
 
-/*×Ô¶¯Á÷³Ì*/
+/*è‡?åŠ¨æµç¨?*/
 TaskHandle_t Auto_task_Handler;
 void Auto_task(void *pvParameters)
 {
@@ -139,78 +139,78 @@ void Auto_task(void *pvParameters)
 	{
 		switch(Auto_flag)
 		{
+
 			case 1:
 				HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_RESET);
-				/*ÉÏµºÁ÷³Ì*/
+				/*ä¸Šå²›æµç¨‹*/
 				HAL_GPIO_WritePin(Q1_GPIO_Port,Q1_Pin,GPIO_PIN_RESET);
-				HAL_GPIO_WritePin(Q2_GPIO_Port,Q2_Pin,GPIO_PIN_RESET);//È«Éý
+				HAL_GPIO_WritePin(Q2_GPIO_Port,Q2_Pin,GPIO_PIN_RESET);//å…¨å‡
 			
-				osDelay(700);
+				osDelay(450);  /*æ­¤å?„å‡å°äº†100ms*/
 			  
-				HAL_GPIO_WritePin(Q_GPIO_Port,Q_Pin,GPIO_PIN_RESET);//Æø¸×µ¯³ö
-			 // Get_PID_Expect(700);  //È«ÉýÖ®ºó£¬³µÏòÇ°¿¿½ü
-				osDelay(700);
+				HAL_GPIO_WritePin(Q_GPIO_Port,Q_Pin,GPIO_PIN_RESET);//æ°”ç¼¸å¼¹å‡º
+			    Get_PID_Expect(2000);  /*åˆå??1500ï¼ŒåŠ äº?500*///å…¨å‡ä¹‹åŽï¼Œè½¦å‘å‰é è¿‘
+				osDelay(450);
 				
-				HAL_GPIO_WritePin(Q1_GPIO_Port,Q1_Pin,GPIO_PIN_SET);		//Ç°ÍÈÊÕ
-				osDelay(700);
+				HAL_GPIO_WritePin(Q1_GPIO_Port,Q1_Pin,GPIO_PIN_SET);		//å‰è…¿æ”?
+				osDelay(700);  /*å?ä»¥æ”¹çŸ?ï¼Ÿå…ˆå¼€å§‹runèµ·æ¥*/
 				
-			//	Get_PID_Expect(2500);   //Ç°ÂÖÉÏÌ¨½× ºóÂÖ¿¿½üÌ¨½×
-				Get_PID_Expect_qian(3500);
-				Get_PID_Expect_hou(3000);
-				while(RF4==1) vTaskDelay(1);	//µÈ´ý´«¸ÐÆ÷ ¼ì²â¸¨ÖúÂÖÉÏÌ¨½×
+//				Get_PID_Expect_qian(3500);
+//				Get_PID_Expect_hou(3000);
+                Get_PID_Expect(3500);  
+				while(RF4==1) vTaskDelay(1);	//ç­‰å¾…ä¼ æ„Ÿå™? æ£€æµ‹è¾…åŠ©è½®ä¸Šå°é˜?
 				
-				Get_PID_Expect(500);  //ºóÂÖ×²ÉÏºó ·´µ¯ ³µÍùÇ°¿ª Çá´¥Ì¨½×
+				Get_PID_Expect(500);  //åŽè½®æ’žä¸Šå? åå¼¹ è½¦å¾€å‰å¼€ è½»è§¦å°é˜¶
 				osDelay(500);
 				
-				HAL_GPIO_WritePin(Q2_GPIO_Port,Q2_Pin,GPIO_PIN_SET); //ºóÍÈÊÕ
-				osDelay(700);          //µÈ´ýºóÍÈÊÕ
+				HAL_GPIO_WritePin(Q2_GPIO_Port,Q2_Pin,GPIO_PIN_SET); //åŽè…¿æ”?
+				osDelay(700);          //ç­‰å¾…åŽè…¿æ”?
 				
-				Get_PID_Expect(5000);  //Ç°ºóÂÖÈ«ËÙÇ°½ø ÅÀÌ¨½×
+				Get_PID_Expect(6000);  /*åˆå??4000ï¼ŒåŠ 1000*///å‰åŽè½?å…¨é€Ÿå‰è¿? çˆ?å°é˜¶ 
 				
-				osDelay(1000);          //ÒÔ4000ËÙ¶ÈÐÐ½ø100000ºÁÃë
+				osDelay(1000);         /*åˆå??1000ï¼Œç¼©çŸ?200*///ä»?5000é€Ÿåº¦è¡Œè¿›1000æ¯?ç§?
 				
-				Get_PID_Expect(0);  //Í£
+				Get_PID_Expect(0);  //å?
 				
-				Auto_flag=0;  //±êÖ¾Î»ÇåÁã
-				HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_SET); //Ö¸Ê¾µÆÉÁË¸ ±íÊ¾³ÌÐòÕý³£ÔËÐÐ
+				Auto_flag=0;  //æ ‡å¿—ä½æ¸…é›?
+				HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_SET); //æŒ‡ç¤ºç?é—?çƒ? è¡¨ç¤ºç¨‹åºæ­£å¸¸è¿è??
 				
-			//osDelay(1000);
-			  HAL_GPIO_WritePin(Q_GPIO_Port,Q_Pin,GPIO_PIN_SET);//Æø¸×ÊÕ
-			  break;
-			
+			    HAL_GPIO_WritePin(Q_GPIO_Port,Q_Pin,GPIO_PIN_SET);//æ°”ç¼¸æ”?
+			    break;
+                
 			case 2:
 				HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_RESET);
-				/*ÏÂµºÁ÷³Ì*/
-				HAL_GPIO_WritePin(Q_GPIO_Port,Q_Pin,GPIO_PIN_RESET);//Æø¸×µ¯³ö
+				/*ä¸‹å²›æµç¨‹*/
+				HAL_GPIO_WritePin(Q_GPIO_Port,Q_Pin,GPIO_PIN_RESET);//æ°”ç¼¸å¼¹å‡º
 				
 				Get_PID_Expect(-2000);
 				
-				while((RF2==0)||(RF3==0))osDelay(1);	//µÈ´ý´«¸ÐÆ÷
-					
+				while((RF2==0)||(RF3==0))osDelay(1);	//ç­‰å¾…ä¼ æ„Ÿå™?
+//				while((RF2==0))osDelay(1);	//ç­‰å¾…ä¼ æ„Ÿå™?					
 				Get_PID_Expect(0);
 								
-				HAL_GPIO_WritePin(Q2_GPIO_Port,Q2_Pin,GPIO_PIN_RESET);//ºóÍËÉì
-				osDelay(700);/*µÈ´ýºóÍËÉì*/
+				HAL_GPIO_WritePin(Q2_GPIO_Port,Q2_Pin,GPIO_PIN_RESET);//åŽé€€ä¼?
+				osDelay(700);/*ç­‰å¾…åŽé€€ä¼?*/
 				
 				Get_PID_Expect(-2800);
 				
-			//	while((RF0==0)||(RF1==0))osDelay(1);	//µÈ´ý´«¸ÐÆ÷
-				while(RF0==0)vTaskDelay(1);	//µÈ´ý´«¸ÐÆ÷
+			//	while((RF0==0)||(RF1==0))osDelay(1);	//ç­‰å¾…ä¼ æ„Ÿå™?
+				while(RF0==0)vTaskDelay(1);	//ç­‰å¾…ä¼ æ„Ÿå™?
 				Get_PID_Expect(0);
 				
-				HAL_GPIO_WritePin(Q1_GPIO_Port,Q1_Pin,GPIO_PIN_RESET);//Ç°Éì
+				HAL_GPIO_WritePin(Q1_GPIO_Port,Q1_Pin,GPIO_PIN_RESET);//å‰ä¼¸
 				osDelay(700);
 				
-				HAL_GPIO_WritePin(Q_GPIO_Port,Q_Pin,GPIO_PIN_SET);//Æø¸×ÊÕ
+				HAL_GPIO_WritePin(Q_GPIO_Port,Q_Pin,GPIO_PIN_SET);//æ°”ç¼¸æ”?
 				vTaskDelay(100);
-				HAL_GPIO_WritePin(Q1_GPIO_Port,Q1_Pin,GPIO_PIN_SET);	//È«ÊÕ
+				HAL_GPIO_WritePin(Q1_GPIO_Port,Q1_Pin,GPIO_PIN_SET);	//å…¨æ”¶
 				HAL_GPIO_WritePin(Q2_GPIO_Port,Q2_Pin,GPIO_PIN_SET);			
 				
 				Auto_flag=0;
 				HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_SET);
 			  break;
-			
-			default:
+			  
+			  default:
 				vTaskDelay(5);
 				break;
 		}
